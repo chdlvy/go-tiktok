@@ -1,0 +1,53 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/tabbar/home"
+		},
+		{
+			"path": "pages/tabbar/friend"
+		},
+		{
+			"path": "pages/tabbar/profile"
+		},
+		{
+			"path": "pages/tabbar/chat"
+		},
+		{
+			"path": "pages/tabbar/publish"
+		}
+	],
+	"tabBar": {
+		"color": "#000",
+		"selectedColor": "#fff",
+		"list": [
+			{
+				"pagePath": "pages/tabbar/home",
+				"text": "首页"
+			},
+			
+			{
+				"pagePath": "pages/tabbar/friend",
+				"text": "朋友"
+			},
+			{
+				"pagePath": "pages/tabbar/chat",
+				"text": "消息"
+			},
+			{
+				"pagePath": "pages/tabbar/profile",
+				"text": "我"
+			}
+		],
+		"midButton": {
+			"iconPath": "static/logo.png"
+			
+		}
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"uniIdRouter": {}
+}
