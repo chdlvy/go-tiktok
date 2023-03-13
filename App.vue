@@ -15,4 +15,7 @@
 
 <style>
 	/*每个页面公共css */
+	uni-page-body,html,body {
+		height: 100%;
+	}
 </style>
