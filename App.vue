@@ -14,6 +14,10 @@
 </script>
 
 <style>
+	* {
+		margin: 0;
+		padding: 0;
+	}
 	/*每个页面公共css */
 	uni-page-body,html,body {
 		height: 100%;

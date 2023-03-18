@@ -1,25 +1,23 @@
 <template>
-	<swiper vertical="true" class="swiper">
-		<swiper-item>
-			<image class="img" src="../../static/1.jpg"></image>
-		</swiper-item>
-		<swiper-item>
-			<image class="img" src="../../static/2.jpg"></image>
-		</swiper-item>
-	</swiper>
+		<view class="recommend">
+			<swipercomp></swipercomp>
+		</view>
 </template>
 
 <script setup>
+	import {ref} from "vue"
+
+	import swipercomp from "@/pages/components/swiper/swipercomp.vue"
+	
 	
 </script>
 
 <style scoped>
-	.swiper {
+	
+	.recommend {
 		height: 100%;
+		position: relative;
+		background-color: #000;
 	}
 	
-	.img {
-		height: 100%;
-		width: 100%;
-	}
 </style>
