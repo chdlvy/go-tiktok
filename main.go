@@ -1,14 +1,14 @@
 package main
 
 import (
-	"tiktok/router"
+	rt "tiktok/router"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	r := gin.Default()
-	router.InitRouter(r)
+	router := new(rt.Router)
+	go router.InitRouter(r)
 	r.Run(":8000")
-
 }
