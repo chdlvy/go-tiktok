@@ -20,7 +20,7 @@ func GetToken(content map[string]interface{}) string {
 	// 设置默认时间
 	_, ok := mapClaims["exp"]
 	if !ok {
-		mapClaims["exp"] = time.Now().Unix() + 5
+		mapClaims["exp"] = time.Now().Unix() + 50
 	}
 	//new一个token，参数1：加密算法，参数2：需要加密的内容
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, mapClaims)
@@ -34,16 +34,15 @@ func GetToken(content map[string]interface{}) string {
 }
 
 // 解密
-func ParseToken(tokenString string) jwt.MapClaims {
+func ParseToken(tokenString string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		return mySigningKey, nil
 	})
 	if err != nil {
-		fmt.Println("解密失败：", err.Error())
-		return nil
+		return nil, err
 	}
 	// fmt.Println("解密：", token)
 	// fmt.Println("token.Claims：", token.Claims)
 	// fmt.Println("name：", token.Claims.(jwt.MapClaims)["name"])
-	return token.Claims.(jwt.MapClaims)
+	return token.Claims.(jwt.MapClaims), nil
 }

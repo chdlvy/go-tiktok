@@ -3,6 +3,7 @@ package utils
 import (
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -50,4 +51,20 @@ func MapToStruct(m map[string]string, s interface{}) error {
 	}
 
 	return nil
+}
+
+// 结构体转map
+func StructToMap(obj interface{}) map[string]interface{} {
+	t := reflect.TypeOf(obj)
+	v := reflect.ValueOf(obj)
+
+	var data = make(map[string]interface{})
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		value := v.Field(i).Interface()
+		// 键名开头小写
+		name := strings.ToLower(field.Name[:1]) + field.Name[1:]
+		data[name] = value
+	}
+	return data
 }

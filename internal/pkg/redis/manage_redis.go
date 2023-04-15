@@ -2,7 +2,6 @@ package redis
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
@@ -13,6 +12,8 @@ type ManageRedis struct {
 
 const (
 	HOST = "127.0.0.1:6379"
+	// userid:phone的映射
+	IDPHONE = "phone:uid"
 )
 
 var pool *redis.Pool
@@ -31,6 +32,19 @@ func GetredisConn() redis.Conn {
 	}
 	// 从连接池中拿一个连接出去
 	return pool.Get()
+}
+
+func InitRedis() {
+	rdb := GetredisConn()
+	defer rdb.Close()
+	rdb.Send("multi")
+	rdb.Send("flushall")
+	rdb.Send("set", "user:max_id", "0")
+	rdb.Send("select", "1")
+	rdb.Send("set", "video:max_id", "0")
+	rdb.Send("set", "comment:max_id", "0")
+	rdb.Send("select", "0")
+	rdb.Send("exec")
 }
 
 // 每一个用户注册就添加user到user表中
@@ -66,6 +80,7 @@ func IncrMaxUserId() (int64, error) {
 	return num, nil
 }
 
+// 用户是否存在
 func ExistUser(userId uint64) bool {
 	rdb := GetredisConn()
 	defer rdb.Close()
@@ -74,22 +89,27 @@ func ExistUser(userId uint64) bool {
 	return res == 1
 }
 
-func AddModUserToRedis(userId uint64, userName string, password string, avatar string, gender uint8, birthday string, publishCount uint64) error {
+// 添加user信息到redis
+func AddModUserToRedis(userId uint64, userName string, password string, phone string, avatar string, gender uint8, birthday string, publishCount uint64) error {
 	rdb := GetredisConn()
 	defer rdb.Close()
 
 	// 创建一个新的Hash存储用户信息
 	key := fmt.Sprintf("user:%d:detail", userId)
-	_, err := rdb.Do("hmset", key, "id", userId, "username", userName, "password",
-		password, "avatar", avatar, "gender", gender,
+	rdb.Send("multi")
+	rdb.Send("hmset", key, "id", userId, "username", userName, "password",
+		password, "phone", phone, "avatar", avatar, "gender", gender,
 		"birthday", birthday, "publish_count", publishCount,
 		"create_time", time.Now().Unix())
+	rdb.Send("hmset", IDPHONE, phone, userId)
+	_, err := rdb.Do("exec")
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
+// 获取user信息
 func GetUser(userId uint64) (map[string]string, error) {
 	rdb := GetredisConn()
 	defer rdb.Close()
@@ -103,29 +123,4 @@ func GetUser(userId uint64) (map[string]string, error) {
 	res, err := redis.StringMap(rdb.Do("hgetall", key))
 	return res, err
 	// redis.ScanStruct(rdb.Do("hgetall", key))
-}
-
-func SaveVideoToRedis(uid uint64, v string) {
-	rdb := GetredisConn()
-	defer rdb.Close()
-	// 获取user
-	user, _ := GetUser(uid)
-
-	videoId, _ := strconv.ParseUint(user["publish_count"], 10, 64)
-	k := fmt.Sprintf("user:%d:video:%d", uid, videoId+1)
-	userk := fmt.Sprintf("user:%d:detail", uid)
-	// k := "user:" + strconv.FormatUint(uid, 10) + ":video:" + videoId
-
-	rdb.Send("multi")
-	rdb.Send("hset", "video", k, v)
-	// 作者的发布数量自增1
-	rdb.Send("hincrby", userk, "publish_count", "1")
-
-	// 执行事务
-	res, err := rdb.Do("exec")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(res)
 }

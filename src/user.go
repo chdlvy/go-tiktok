@@ -1,6 +1,7 @@
 package src
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	redis "tiktok/internal/pkg/redis"
@@ -14,19 +15,28 @@ type User struct {
 	ModReply   *ModReply
 	ModUser    *ModUser
 	ModVideo   *ModVideo
+	ModLike    *ModLike
 }
 
-func InitUser(newUser *ModUser) *User {
+func InitUser(newUser *ModUser) (*User, error) {
 	user := new(User)
 	user.ModComment = new(ModComment)
 	user.ModReply = new(ModReply)
-	user.ModUser = newUser
-	user.AddUser()
 	user.ModVideo = new(ModVideo)
-	return user
+	user.ModLike = new(ModLike)
+
+	user.ModUser = newUser
+	err := user.AddUser()
+	return user, err
 }
 
 func (this *User) AddUser() error {
+
+	// 检查是否被注册过
+	err := redis.HasRejistered(this.ModUser.Phone)
+	if err != nil {
+		return errors.New(err.Error())
+	}
 
 	// 更新最大ID，将新用户ID设置为当前最大ID加1
 	num, err := redis.IncrMaxUserId()
@@ -35,15 +45,8 @@ func (this *User) AddUser() error {
 	}
 	this.ModUser.Id = uint64(num)
 
-	// rdb := redis.GetredisConn()
-	// defer rdb.Close()
-	// key := fmt.Sprintf("user:%d:", this.ModUser.Id)
-	// str, _ := json.Marshal(this)
-	// fmt.Println(str)
-	// rdb.Do("hmset", "user", key, string(str))
-
 	// 将用户信息存储到Redis
-	err = redis.AddModUserToRedis(this.ModUser.Id, this.ModUser.UserName, this.ModUser.Password, this.ModUser.Avatar, this.ModUser.Gender, this.ModUser.Birthday, this.ModUser.PublishCount)
+	err = redis.AddModUserToRedis(this.ModUser.Id, this.ModUser.UserName, this.ModUser.Password, this.ModUser.Phone, this.ModUser.Avatar, this.ModUser.Gender, this.ModUser.Birthday, this.ModUser.PublishCount)
 	if err != nil {
 		return err
 	}
