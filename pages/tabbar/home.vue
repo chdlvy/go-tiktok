@@ -18,6 +18,8 @@
 	import shop from "../views/shop.vue"	
 	import explore from "../views/explore.vue"
 	
+	
+	
 	// 控制头顶显示,打开评论区就隐藏头顶，关闭评论区就显示头顶
 	let isShowTop = ref(false)
 	function GrandsonGrandfatherChannel(value) {

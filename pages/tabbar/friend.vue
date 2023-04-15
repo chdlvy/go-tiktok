@@ -1,7 +1,9 @@
 <template>
+	<video></video>
 </template>
 
-<script>
+<script setup>
+	import video from "./video.vue"
 </script>
 
 <style>

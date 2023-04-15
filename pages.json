@@ -26,11 +26,19 @@
 		},
 		{
 			"path": "pages/views/shop"
+		},
+		{
+			"path": "pages/views/login"
+		},
+		{
+			"path": "pages/views/publish"
 		}
 	],
 	"tabBar": {
-		"color": "#000",
+		"backgroundColor":"#000",
+		"color": "gray",
 		"selectedColor": "#fff",
+		"fontSize":"16px",
 		"list": [
 			{
 				"pagePath": "pages/tabbar/home",
@@ -51,8 +59,8 @@
 			}
 		],
 		"midButton": {
-			"iconPath": "static/logo.png"
-			
+			"iconPath": "static/logo.png",
+			"height": "2.2rem"
 		}
 	},
 	"globalStyle": {

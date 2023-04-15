@@ -2,7 +2,12 @@
 <script>
 	export default {
 		onLaunch: function() {
-			console.log('App Launch')
+			uni.onTabBarMidButtonTap(function(e) {
+				uni.navigateTo({
+					url:"/pages/views/publish",
+					animationType:"fade-in"
+				})
+			})
 		},
 		onShow: function() {
 			console.log('App Show')

@@ -1,40 +1,56 @@
 <template>
 	<transition>
-		<scroll-view scroll-y="true" class="comment" >
-			<view class="comment-top">
-				<text>100条评论</text>
-				<image src="/static/interact/close.png"></image>
-			</view>
-				<comment-item></comment-item>
-				<comment-item></comment-item>
-				<comment-item></comment-item>
-				<comment-item></comment-item>
-				<comment-item></comment-item>
-				<comment-item></comment-item>
-				<comment-item></comment-item>
-				<comment-item></comment-item>
-				<comment-item></comment-item>
-				<comment-item></comment-item>
-				<comment-item></comment-item>
-				<comment-item></comment-item>
-		</scroll-view>
+		<view class="comment" >
+				<view class="comment-top">
+					<text>{{commentDetail.count}}条评论</text>
+					<image src="/static/interact/close.png" @click="closeComment"></image>
+				</view>
+				<scroll-view scroll-y="true" style="height: 100%;">
+					<comment-item 
+					v-for="(item,index) in commentDetail.list" 
+					:key="index"
+					:commentItemMsg="item"
+					></comment-item>
+				</scroll-view>
+		</view>
 	</transition>
 </template>
 
 <script setup>
-	import {ref} from 'vue'
+	import {ref,onMounted,reactive} from 'vue'
 	import commentItem from "./commentItem"
+	import {getComment} from "@/network/home.js"
+	const props = defineProps(["commentDetail","videoId"])
+	const emit = defineEmits(['closeComment'])
+	
+	let commentDetail = reactive({
+		count:0,
+		list:[]
+	})
+	
+	onMounted(()=> {
+		// 发送请求获取评论信息
+		getComment(0,props.videoId).then(res=>{
+			commentDetail.count=res.data.count
+			commentDetail.list= res.data.list
+		})
+	})
+	
+	function closeComment() {
+		emit('closeComment')
+	}
 	
 </script>
 
 <style scoped>
-	
 	.comment {
 		background-color: #fff;
+		/* position: absolute;
+		bottom: 0; */
 		position: relative;
 		z-index: 1;
-		border-top-left-radius: 10px;
-		border-top-right-radius: 10px;
+		border-top-left-radius: 15px;
+		border-top-right-radius: 15px;
 		overflow: hidden;
 	}
 	.comment-top {
@@ -44,6 +60,7 @@
 		height: 30px;
 		line-height: 30px;
 		text-align:center;
+		background-color: #fff;
 		
 	}
 	comment-item {

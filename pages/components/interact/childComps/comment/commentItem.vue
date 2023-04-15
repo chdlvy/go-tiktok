@@ -2,11 +2,11 @@
 		<view class="comment-item">
 			<view class="left avatar"><image src="/static/logo.png"></image></view>
 			<view class="right">
-				<view class="user-name">阿斯顿</view>
-				<view class="content">太好看了太好看了太好看了太好看了太好看了太好看了太好看了太好看了太好看了太好看了太好看了太好看了太好看了太好看了太好看了</view>
+				<view class="user-name">{{commentItemMsg.userMsg.username}}</view>
+				<view class="content">{{commentItemMsg.content}}</view>
 				<view class="bottom">
 					<view class="bottom-left">
-						<text class="time">2小时前 · 广东</text>
+						<text class="time">{{commentTime}} · 广东</text>
 						<text class="reply">回复</text>
 					</view>
 					<!-- 点赞和踩 -->
@@ -14,7 +14,7 @@
 						<view class="great" @click="greate">
 							<image v-show="!greateActive" src="../../../../../static/interact/great.png"></image>
 							<image v-show="greateActive" src="../../../../../static/interact/great_active.png"></image>
-							<text>15</text>
+							<text>{{commentItemMsg.likeCount}}</text>
 						</view>
 						<view class="bad" @click="bad">
 							<image v-show="!badActive" src="../../../../../static/interact/bad.png"></image>
@@ -30,8 +30,13 @@
 
 <script setup>
 	import {ref} from "vue"
+	import {getCommentTime} from "@/utils/utils.js"
+	const props = defineProps(["commentItemMsg"])
+	let commentItemMsg = ref(props.commentItemMsg)	
 	let greateActive = ref(false)
 	let badActive = ref(false)
+	
+	let commentTime = ref(getCommentTime(commentItemMsg.value.createAt))
 	function greate() {
 		greateActive.value = !greateActive.value
 	}
